@@ -1,0 +1,53 @@
+                              BIG-STRING
+                              ==========
+
+                           By Robert Smith
+
+
+INTRODUCTION & USAGE
+--------------------
+
+BIG-STRING is a library for working with big strings. Despite the
+name, BIG-STRING is also useful for general collections of strings. It
+is very much like Java's StringBuilder class. Care has been taken to
+make most operations linear in time at worst.
+
+The usual trick to concatenate many strings together in (probably)
+linear time is to use WITH-OUTPUT-TO-STRING:
+
+CL-USER> (let ((strings '("this " "is " "a " "collection " "of " "strings.")))
+           (with-output-to-string (*standard-output*)
+             (dolist (string strings)
+               (princ string))))
+"this is a collection of strings."
+
+Depending on how WITH-OUTPUT-TO-STRING is implemented, this might not
+be linear, and could be inefficient.
+
+BIG-STRING encapsulates this idea in a data structure:
+
+BIG-STRING> (let* ((strings '("this " "is " "a " "collection " "of " "strings."))
+                   (bs (make-big-string)))
+              (dolist (string strings bs)
+                (big-string-append bs string)))
+#<BIG-STRING of 32 characters {10074D6AD3}>
+
+Note that unlike the first method, we can add more strings later. We can convert this into a string in guaranteed linear time:
+
+BIG-STRING> (string-of-big-string *)
+"this is a collection of strings."
+
+In a sense, we are building a string lazily. But more interestingly,
+we can operate on it as if itself was a string.
+
+BIG-STRING> (list (big-string-length **)
+                  (big-string-char ** 10)
+                  (big-string-substring ** 8 20))
+(32 #\c "a collection")
+
+
+LIMITATIONS
+-----------
+
+Right now, a few operations are slightly inefficient. Also, some more
+string-like functions should be implemented.
