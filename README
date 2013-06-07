@@ -22,7 +22,8 @@ CL-USER> (let ((strings '("this " "is " "a " "collection " "of " "strings.")))
 "this is a collection of strings."
 
 Depending on how WITH-OUTPUT-TO-STRING is implemented, this might not
-be linear, and could be inefficient.
+be linear, and could be inefficient (the standard makes no complexity
+guarantee).
 
 BIG-STRING encapsulates this idea in a data structure:
 
@@ -32,10 +33,14 @@ BIG-STRING> (let* ((strings '("this " "is " "a " "collection " "of " "strings.")
                 (big-string-append bs string)))
 #<BIG-STRING of 32 characters {10074D6AD3}>
 
-Note that unlike the first method, we can add more strings later. We can convert this into a string in guaranteed linear time:
+We can convert this into a string in guaranteed linear time:
 
 BIG-STRING> (string-of-big-string *)
 "this is a collection of strings."
+
+It is possble to do an analogous operation by creating a new string
+stream using MAKE-STRING-OUTPUT-STRING, writing to the resulting
+stream, and the obtaining the string using GET-OUTPUT-STREAM-STRING.
 
 In a sense, we are building a string lazily. But more interestingly,
 we can operate on it as if itself was a string.
@@ -51,3 +56,8 @@ LIMITATIONS
 
 Right now, a few operations are slightly inefficient. Also, some more
 string-like functions should be implemented.
+
+The implementation right now takes about twice the time than SBCL
+takes with string streams. However, with some type tweaking,
+BIG-STRING goes at the same speed or faster, with about half the
+memory.
